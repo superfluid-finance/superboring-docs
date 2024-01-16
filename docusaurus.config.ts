@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'SuperBoring Docs',
+  tagline: 'Front Page Under Construction',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -28,7 +28,6 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
   presets: [
     [
       'classic',
@@ -60,19 +59,19 @@ const config: Config = {
     navbar: {
       title: 'SuperBoring Docs',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'SuperBoring',
         src: 'img/logo.svg',
+        href: '/docs/intro'
       },
       items: [
         {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/superfluid-finance',
           label: 'GitHub',
           position: 'right',
         },
@@ -99,11 +98,11 @@ const config: Config = {
             },
             {
               label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              href: 'https://discord.gg/pPzPEDMVua',
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              href: 'https://twitter.com/superfluid_hq',
             },
           ],
         },
@@ -111,17 +110,13 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/superfluid-finance',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Superfluid, Ltd. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
