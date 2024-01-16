@@ -1,0 +1,43 @@
+---
+sidebar_position: 2
+---
+
+import TokenFlowAnimation from '@site/src/components/Visualisation';
+
+# Architecture
+
+SuperBoring aims to create a lovable, hands-free Dollar-Cost Averaging (DCA) application utilizing our existing technology. The long-term vision possibly includes evolving this into a full-blown exchange.
+
+## Overview
+
+The diagram below presents the high-level architecture of the proposed solution.
+
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    <img src="/img/superboring-architecture.png" alt="Architecture" width="600" height="600"/>
+</div>
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    **Figure 1:** High-level architecture of the proposed solution.
+</div>
+
+The solution consists of the following components:
+
+- **AverageX**: A Factory responsible for deploying TOREX-s and distributing rewards.
+- **TOREX**: Multiple contracts described by a supertoken pair which is unidirectional.
+- **Reward Token**: A simple "dumb" Pure Supertoken.
+- **Liquidity Solution/Flashloan**: Automates trade settlements for users.
+- **GDA Pool**: General Distribution Agreement Pool allowing us to distribute rewards to users.
+
+## Referrals System
+
+An integral part of SuperBoring's strategy for achieving viral growth is the implementation of a user-friendly referral system. This system is designed to incentivize users to refer others without penalizing new users.
+
+- **Referral Codes as Addresses**: In this innovative approach, a user’s Ethereum address serves as their referral code. This eliminates the need for generating separate referral codes, as users can use their existing Ethereum addresses to refer others.
+
+- **Incentives for Referring New Users**: When a referred user starts Dollar-Cost Averaging (DCA) with SuperBoring, the referrer’s $AVG reward flow rate increases. The increase in the flow rate is calculated based on the activity of the referred user, encouraging existing users to bring in new participants to the platform.
+
+- **Simplified Integration**: The referral system is designed to be integrated directly within the SuperApp, avoiding the need for additional contracts. This simplification helps in maintaining a streamlined user experience and reduces the complexity of the system.
+
+- **Prevention of Self-Referral**: To maintain fairness and discourage gaming of the system, self-referrals are not allowed. This is particularly enforced by prohibiting referrals from the same Ethereum address.
+
+This referral system is expected to play a crucial role in driving user engagement and expanding the user base of SuperBoring, contributing significantly to its growth and success.
+
