@@ -94,10 +94,14 @@ const TokenFlowAnimation = () => {
     svg
       .append("text")
       .attr("x", width - 50)
-      .attr("y", height / 2 + 5)
+      .attr("y", height / 2)
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
-      .text("Uniswap");
+      .text("Liquidity Source")
+      .append("tspan")
+      .attr("x", width - 50)
+      .attr("dy", "1.2em") // Adjust this value to set the distance between lines
+      .text("(eg. Uniswap)");
 
     //Arrows
     svg
@@ -114,14 +118,15 @@ const TokenFlowAnimation = () => {
       .attr("d", "M0,-5L10,0L0,5")
       .attr("fill", "red");
 
-    svg.append('line')
-    .attr('x1', 550)
-    .attr('y1', height / 2 - 90)
-    .attr('x2', 550)
-    .attr('y2', height / 2-50)
-    .attr('stroke', 'red')
-    .attr('stroke-width', 2)
-    .attr('marker-end', 'url(#arrowhead)');
+    svg
+      .append("line")
+      .attr("x1", 550)
+      .attr("y1", height / 2 - 90)
+      .attr("x2", 550)
+      .attr("y2", height / 2 - 50)
+      .attr("stroke", "red")
+      .attr("stroke-width", 2)
+      .attr("marker-end", "url(#arrowhead)");
 
     svg
       .append("defs")
@@ -137,15 +142,15 @@ const TokenFlowAnimation = () => {
       .attr("d", "M0,-5L10,0L0,5")
       .attr("fill", "red");
 
-    svg.append('line')
-    .attr('x1', 50)
-    .attr('y1', height / 2 - 90)
-    .attr('x2', 50)
-    .attr('y2', height / 2-50)
-    .attr('stroke', 'red')
-    .attr('stroke-width', 2)
-    .attr('marker-end', 'url(#arrowhead)');
-
+    svg
+      .append("line")
+      .attr("x1", 50)
+      .attr("y1", height / 2 - 90)
+      .attr("x2", 50)
+      .attr("y2", height / 2 - 50)
+      .attr("stroke", "red")
+      .attr("stroke-width", 2)
+      .attr("marker-end", "url(#arrowhead)");
 
     // Function to generate and animate a token
     let count = 0;
