@@ -14,7 +14,7 @@ The long-term vision possibly includes evolving this into a full-blown exchange.
 The diagram below presents the high-level architecture of SuperBoring:
 
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-    <img src="/img/averagex-money-flows.png" alt="Architecture" width="800" height="600"/>
+    <img src="/img/superboring-money-flows.png" alt="Architecture" width="800" height="600"/>
 </div>
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
     **Figure 1:** High-level architecture of the proposed solution.
@@ -22,12 +22,12 @@ The diagram below presents the high-level architecture of SuperBoring:
 
 SuperBoring consists of the following components:
 
-- **AverageX**: A Factory responsible for deploying TOREX-s and distributing rewards.
+- **SuperBoring Contract**: A Factory responsible for deploying TOREX-s and distributing rewards.
 - **TOREX**: It stands for T(WAP) OR(acle) EX(change). It is a unique way to continuously swap tokens accumulated by money streaming. To learn more about TOREX, please refer to the [TOREX page](/docs/torex).
 - **Reward Token**: A simple  Pure Super Token.
 - **Distribution Pools**: A pool based on Superfluid's [Distribution Pools](https://docs.superfluid.finance/docs/protocol/distributions/guides/pools) primitive to infinitely scale one-to-many token distributions.
-- **In-token**: The source asset which the user is streaming to the AverageX contract.
-- **Out-token**: The target asset which the user getting our of the AverageX contract.
+- **In-token**: The source asset which the user is streaming to the SuperBoring contract.
+- **Out-token**: The target asset which the user getting our of the SuperBoring contract.
 
 :::tip New to Superfluid?
 
