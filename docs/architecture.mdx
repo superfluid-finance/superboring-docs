@@ -6,30 +6,32 @@ import TokenFlowAnimation from '@site/src/components/Visualisation';
 
 # Architecture
 
-SuperBoring aims to create a lovable, hands-free Dollar-Cost Averaging (DCA) application utilizing our existing technology. The long-term vision possibly includes evolving this into a full-blown exchange.
+SuperBoring aims to create a lovable, hands-free Dollar-Cost Averaging (DCA) application using the Superfluid Protocol primitives such as Money Streaming and Distribution Pools.
+The long-term vision possibly includes evolving this into a full-blown exchange.
 
 ## Overview
 
-The diagram below presents the high-level architecture of the proposed solution.
+The diagram below presents the high-level architecture of SuperBoring:
 
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-    <img src="/img/superboring-architecture.png" alt="Architecture" width="600" height="600"/>
+    <img src="/img/averagex-money-flows.png" alt="Architecture" width="800" height="600"/>
 </div>
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
     **Figure 1:** High-level architecture of the proposed solution.
 </div>
 
-The solution consists of the following components:
+SuperBoring consists of the following components:
 
 - **AverageX**: A Factory responsible for deploying TOREX-s and distributing rewards.
-- **TOREX**: Multiple contracts described by a supertoken pair which is unidirectional.
-- **Reward Token**: A simple "dumb" Pure Supertoken.
-- **Liquidity Solution/Flashloan**: Automates trade settlements for users.
-- **GDA Pool**: General Distribution Agreement Pool allowing us to distribute rewards to users.
+- **TOREX**: It stands for T(WAP) OR(acle) EX(change). It is a unique way to continuously swap tokens accumulated by money streaming. To learn more about TOREX, please refer to the [TOREX page](/docs/torex).
+- **Reward Token**: A simple  Pure Super Token.
+- **Distribution Pools**: A pool based on Superfluid's [Distribution Pools](https://docs.superfluid.finance/docs/protocol/distributions/guides/pools) primitive to infinitely scale one-to-many token distributions.
+- **In-token**: The source asset which the user is streaming to the AverageX contract.
+- **Out-token**: The target asset which the user getting our of the AverageX contract.
 
 :::tip New to Superfluid?
 
-If you are new to Superfluid, you probably are unfamiliar with the Distributions or the GDA. We recommend you read the [Superfluid documentation](https://v2.docs.superfluid.finance/docs/concepts/overview/distributions) to get a better understanding of these concepts.
+If you are new to Superfluid, you probably are unfamiliar with the Distribution Pools. We recommend you read the [Superfluid documentation](https://docs.superfluid.finance/docs/concepts/overview/distributions) to get a better understanding of these concepts.
 
 :::
 

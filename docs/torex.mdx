@@ -1,0 +1,69 @@
+---
+sidebar_position: 3
+---
+
+# TOREX
+
+**TOREX** stands for **T(WAP) OR(acle) EX(change)**. It is a core mechanism and the smart contract engine used to make sure that the funds accumulated (*in-tokens*) on
+AverageX (The main SuperBoring smart contract) are continuously and efficiently swapped for the destination asset (called *out-tokens*).
+
+:::tip What is a TWAP?
+A time-weighted average price (TWAP) is a trading benchmark that's generally used in finance to measure the price of an asset over a specific time frame.
+It is calculated by taking the average price of the asset over a set amount of time, and it is often used to evaluate the execution of larger orders.
+:::
+
+## Introduction
+
+TOREX is a unique way for traders to swap one asset for another using smart contracts, where:
+
+1. The swaps are performed time-continuously. This way of exchange is also known as a "reactive exchange." The appendix "Other Reactive Exchanges" compares it with other reactive exchanges.
+2. Using a time-weighted price oracle (TWAP) to regulate the aggregation of liquidity sources gives traders a fair price over time.
+3. The origins of liquidity sources for the exchanges are agnostic to the exchange. The appendix "Basic Liquidity Mover" provides a reference implementation that uses the liquidity source of a Uniswap V3 pool.
+
+:::tip Where do we get the TWAP?
+TOREX uses the TWAP oracles provided by Uniswap V3 pools. To learn more about Uniswap V3, please refer to [Uniswap V3 Whitepaper](https://uniswap.org/whitepaper-v3.pdf).
+:::
+
+## Core Logic
+
+The image below shows the core events of TOREX.
+
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    <img src="/img/torex-core-events.png" alt="TOREX" width="800" height="500"/>
+</div>
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    **Figure 1:** Core events of TOREX.
+</div>
+
+The core logic of TOREX is to swap the source asset (called *in-tokens*) for the destination asset (called *out-tokens*) continuously.
+
+To do so, each TOREX book keeps money streams from traders, maintains a temporary liquidity pool of in-tokens, and offers the liquidity to **Liquidity Movers** at a benchmark quote for an amount of out-tokens.
+
+At a **Liquidity Movement** event, the TOREX receives the quoted amount of out-tokens and distributes them to the traders through Superfluid money distribution.
+
+:::tip What is a Liquidity Mover?
+A Liquidity Mover is a user who facilitate trades for incoming streams.
+They compete with each other closing trades through our Liquidity Solution using [Instant Distributions](https://docs.superfluid.finance/docs/protocol/distributions/overview), and receive a fee in exchange.
+Learn more about Liquidity Movement in the next section.
+:::
+
+## Liquidity Movement
+
+A Liquidity Mover is an an operator which creates and manages an on-chain Liquidity Mover contract.
+The Liquidity Mover contract is a smart contract that interacts with the TOREX smart contract to facilitate trades for incoming streams.
+
+To trigger a Liquidity Movement event, the Liquidity Mover contract must call the `moveLiquidity` function of the TOREX smart contract. This makes TOREX do the following:
+- Check the balance of the temporary liquidity pool of in-tokens.
+- Get the benchmark TWAP price from the Uniswap V3 pool.
+- Adds a discount to the benchmark TWAP price to incentivize the Liquidity Mover to close the trade.
+- Make sure that the Liquidity Mover gives back the quoted amount of out-tokens to the TOREX.
+- Distribute the quoted amount of out-tokens to the users.
+
+:::tip How is the discount calculated?
+The discount model follows a shifted reciprocal function $f(v, t)=v * \frac{F}{F+t}$ where $F$ is the discount factor, $v$ is the full value without discount,
+and $t$ is the relative time since the discount should start applying. As you can notice, when $t$ is 0, it applies zero discount,
+while at the infinite future, the entire value is discounted.
+:::
+
+## Learn More
+TOREX is a complex system with many moving parts. To learn more about TOREX, please refer to the [TOREX Whitepaper](#link).
