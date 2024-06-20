@@ -74,7 +74,7 @@ const config: Config = {
       logo: {
         alt: 'SuperBoring',
         src: 'img/logo.svg',
-        href: '/docs/'
+        href: '/'
       },
       items: [
         {

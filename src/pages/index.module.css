@@ -1,23 +1,79 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
-}
-
-.buttons {
+.backgroundContainer {
+  background-image: url('/img/bg-image.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 50px;
+}
+
+.content {
+  text-align: center;
+  color: white;
+}
+
+.logo {
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.card {
+  background-image: url('/img/card-bg.png');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.cardText {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listItem {
+  background: rgba(0, 0, 0, 0.9); /* Black with 80% opacity */
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, border 0.3s ease;
+}
+
+.listItem:hover {
+  background: rgba(51, 51, 51, 0.9); /* Black with 90% opacity */
+  border: 2px solid white;
+  transform: scale(1.05);
+}
+
+.selected {
+  background: rgba(51, 51, 51, 1); /* Black with 100% opacity */
+  border: 2px solid white; /* Slightly larger */
+}
+
+.goButton {
+  background-color: #36BE91;
+  color: rgb(0, 0, 0);
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  font-size: 1em;
+}
+
+.goButton:hover {
+  background-color: #248061;
 }
