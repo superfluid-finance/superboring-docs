@@ -81,7 +81,17 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Docs',
+          label: 'Explore',
+        },
+        {
+          to: '/docs/boring',
+          label: '$BORING',
+          position: 'left',
+        },
+        {
+          to: '/docs/faq',
+          label: 'FAQ',
+          position: 'left',
         },
         {
           href: 'https://github.com/superfluid-finance',

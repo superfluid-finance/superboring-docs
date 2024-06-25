@@ -12,6 +12,9 @@ export default function Home() {
     { label: "The Basics of SuperBoring", value: "/docs/" },
     { label: "The Architecture of SuperBoring", value: "/docs/architecture" },
     { label: "TOREX (Twap Oracle Exchange)", value: "/docs/torex" },
+    { label: "The $BORING token", value: "/docs/boring" },
+    { label: "How do referrals work?", value: "/docs/referrals" },
+    { label: "Other FAQ", value: "/docs/faq" },
     // Add more items here
   ];
 
