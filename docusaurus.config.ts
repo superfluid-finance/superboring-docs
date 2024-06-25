@@ -6,7 +6,7 @@ import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
   title: 'SuperBoring Docs',
-  tagline: 'Front Page Under Construction',
+  tagline: 'DCA into Crypto every second',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -70,7 +70,7 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: 'Documentation',
+      title: 'Docs',
       logo: {
         alt: 'SuperBoring',
         src: 'img/logo.svg',
@@ -98,6 +98,11 @@ const config: Config = {
           label: 'GitHub',
           position: 'right',
         },
+        {
+          href: 'https://discord.gg/pPzPEDMVua',
+          label: 'Discord',
+          position: 'right',
+        },
       ],
     },
     footer: {
@@ -107,7 +112,7 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Docs',
+              label: 'Explore Docs',
               to: '/docs/',
             },
           ],
@@ -125,7 +130,11 @@ const config: Config = {
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/superfluid_hq',
+              href: 'https://x.com/SuperBoring_xyz',
+            },
+            {
+              label: 'Warpcast',
+              href: 'https://warpcast.com/~/channel/boring',
             },
           ],
         },
