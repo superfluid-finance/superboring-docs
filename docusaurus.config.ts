@@ -84,11 +84,6 @@ const config: Config = {
           label: 'Explore',
         },
         {
-          to: '/docs/boring',
-          label: '$BORING',
-          position: 'left',
-        },
-        {
           to: '/docs/faq',
           label: 'FAQ',
           position: 'left',
@@ -142,8 +137,12 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/superfluid-finance',
+              label: 'Website',
+              href: 'https://superboring.xyz',
+            },
+            {
+              label: 'App',
+              href: 'https://app.superboring.xyz',
             },
           ],
         },

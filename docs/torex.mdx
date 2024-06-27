@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # What is TOREX?
@@ -16,9 +16,9 @@ It is calculated by taking the average price of the asset over a set amount of t
 
 TOREX is a unique way for traders to swap one asset for another using smart contracts, where:
 
-1. The swaps are performed time-continuously. This way of exchange is also known as a "reactive exchange." The appendix "Other Reactive Exchanges" compares it with other reactive exchanges.
+1. The swaps are performed time-continuously. This way of exchange is also known as a "reactive exchange."
 2. Using a time-weighted price oracle (TWAP) to regulate the aggregation of liquidity sources gives traders a fair price over time.
-3. The origins of liquidity sources for the exchanges are agnostic to the exchange. The appendix "Basic Liquidity Mover" provides a reference implementation that uses the liquidity source of a Uniswap V3 pool.
+3. The origins of liquidity sources for the exchanges are agnostic to the exchange. This means that the liquidity sources can be from any source, such as Uniswap V3 pools.
 
 :::tip Where do we get the TWAP?
 TOREX uses the TWAP oracles provided by Uniswap V3 pools. To learn more about Uniswap V3, please refer to [Uniswap V3 Whitepaper](https://uniswap.org/whitepaper-v3.pdf).

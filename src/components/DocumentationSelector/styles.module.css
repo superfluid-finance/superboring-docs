@@ -1,0 +1,93 @@
+.backgroundContainer {
+  position: relative; /* Ensure the container is the reference for the pseudo-element */
+  background-image: url('/img/bg-image.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 50px;
+}
+
+.backgroundContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.05); /* Adjust this to control opacity and color */
+  z-index: 1; /* Ensure it sits above the background image but below the content */
+}
+
+.content {
+  position: relative; /* Ensure the content is above the pseudo-element overlay */
+  z-index: 2; /* Ensure it sits above the overlay */
+  text-align: center;
+  color: white;
+}
+
+.logo {
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.card {
+  background-image: url('/img/card-bg.png');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.cardText {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listItem {
+  background: rgba(0, 0, 0, 0.9); /* Black with 90% opacity */
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, border 0.3s ease;
+}
+
+.listItem:hover {
+  background: rgba(51, 51, 51, 0.9); /* Black with 90% opacity */
+  border: 2px solid white;
+  transform: scale(1.05);
+}
+
+.selected {
+  background: rgba(51, 51, 51, 1); /* Black with 100% opacity */
+  border: 2px solid white; /* Slightly larger */
+}
+
+.goButton {
+  background-color: #36BE91;
+  color: rgb(0, 0, 0);
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  font-size: 1em;
+}
+
+.goButton:hover {
+  background-color: #248061;
+}
