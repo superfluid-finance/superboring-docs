@@ -133,7 +133,7 @@ const config: Config = {
             },
           ],
         },
-        {
+        /*{
           title: 'More',
           items: [
             {
@@ -145,7 +145,7 @@ const config: Config = {
               href: 'https://app.superboring.xyz',
             },
           ],
-        },
+        },*/
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Superfluid, Ltd. Built with Docusaurus.`,
     },
