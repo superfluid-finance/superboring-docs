@@ -47,14 +47,14 @@ $torexShares=\left( \sum_{i \in stakers} \sqrt{stakedAmount(i)} \right)^2$
 
 #### Example:
 - Let's say that there are 2 TOREXes ETHx-DAIx and DAIx-ETHx.
-- Alice stakes 1000 \$BORING tokens in the ETHx-DAIx TOREX and 2000 $BORING tokens in the DAIx-ETHx TOREX.
-- Bob stakes 500 \$BORING tokens in the ETHx-DAIx TOREX and 1000 $BORING tokens in the DAIx-ETHx TOREX.
+- Alice stakes 100 \$BORING tokens in the ETHx-DAIx TOREX and 25 $BORING tokens in the DAIx-ETHx TOREX.
+- Bob stakes 9 \$BORING tokens in the ETHx-DAIx TOREX and 36 $BORING tokens in the DAIx-ETHx TOREX.
 - The TOREX shares in the Distribution Pool will be calculated as follows:
-  - For the ETHx-DAIx TOREX: $torexShares = ( \sqrt{1000} + \sqrt{500} )^2 = 900^2 = 810000$, of which:
-    - Alice will get $1000/1500 * 810000= 540000$ shares
-    - Bob will get $500/1500 * 810000= 270000$ shares
-  - For the DAIx-ETHx TOREX: $torexShares = ( \sqrt{2000} + \sqrt{1000} )^2 = 2100^2 = 4410000$, of which:
-    - Alice will get $2000/3000 * 4410000= 2940000$ shares
-    - Bob will get $1000/3000 * 4410000= 1470000$ shares
+  - For the ETHx-DAIx TOREX: $torexShares = ( \sqrt{100} + \sqrt{9} )^2 = 13^2 = 169$, of which:
+    - Alice will get $100/(100+9) * 169= 155$ shares
+    - Bob will get $9/(100+9) * 169= 13$ shares
+  - For the DAIx-ETHx TOREX: $torexShares = ( \sqrt{25} + \sqrt{36} )^2 = 14^2 = 196$, of which:
+    - Alice will get $25/(25+36) * 196= 80$ shares
+    - Bob will get $36/(25+36) * 196= 115$ shares
 - The TOREXes will then receive a proportional amount of \$BORING emissions based on their shares in the Pool. In this case,
 the DAIx-ETHx TOREX will receive more emissions than the ETHx-DAIx TOREX.

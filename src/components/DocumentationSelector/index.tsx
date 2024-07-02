@@ -5,7 +5,7 @@ const DocumentationSelector = () => {
   const [selectedOption, setSelectedOption] = useState("");
 
   const items = [
-    { label: "The Basics of SuperBoring", value: "/docs/" },
+    { label: "The Basics of SuperBoring", value: "/docs/intro" },
     { label: "The Architecture of SuperBoring", value: "/docs/architecture" },
     { label: "TOREX (Twap Oracle Exchange)", value: "/docs/torex" },
     { label: "The $BORING token", value: "/docs/boring" },
