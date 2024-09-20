@@ -11,7 +11,7 @@ SBMacro provides a convenient API for easy onboarding to SuperBoring, allowing y
 
 ## SBMacro Deployment Addresses
 
-The **SBMacro** contract is deployed on the following networks:
+The [**SBMacro**](https://github.com/d10r/SBMacro/blob/master/README.md) contract is deployed on the following networks:
 
 - Optimism Sepolia: `0x34Db26737185671215fB90E2F8C6fd8C4F8eB944`
 - Celo Mainnet: `0xC25a0B78C1d9F403F33834639FfF5798847015F8`
@@ -74,7 +74,30 @@ contract SuperBoringIntegration {
 }
 ```
 
-In this example, we create a contract that allows users to start a SuperBoring DCA flow by calling the `startSuperBoringDCA` function. This function encodes the parameters and calls the MacroForwarder's `runMacro` function with the SBMacro address and encoded parameters.
+In this example, we create a contract that allows users to start a SuperBoring DCA flow by calling the `startSuperBoringDCA` function.
+This function encodes the parameters and calls the MacroForwarder's `runMacro` function with the SBMacro address and encoded parameters.
+
+As you can see the `SBMacro` contract takes the following parameters:
+
+1. `torexAddr`: this should be the address of the TOREX contract you want to interact with. You can find a list of TOREX contracts [here](/docs/architecture/smart-contracts).
+2. `flowRate`: the rate at which you want to stream tokens to the Torex contract. It is in wei/second.
+3. `distributor`: the address of the distributor, or `address(0)` if none. To learn more about what is a distributor, check the [here](/docs/integrate/#what-is-a-distributor-and-how-much-do-they-earn).
+4. `referrer`: the address of the referrer, or `address(0)` if none. To learn more about referrals, check the [here](/docs/referrals).
+5. `upgradeAmount`: the amount (in wei) to upgrade from the underlying ERC20 to SuperToken.
+
+:::tip What is Upgrading?
+Upgrading is the process of converting an ERC20 token to a Super Token.
+
+In the codebase of Superfluid, the term "upgrade" refers to the process of wrapping an ERC20 token into a Super Token. The term "downgrade" refers to the process of unwrapping a Super Token back into an ERC20 token.
+
+Super Tokens are ERC20 tokens that have additional functionality, such as streaming and distributions. You can learn more about Super Tokens at the [Superfluid Docs](https://docs.superfluid.finance/).
+:::
+
+:::warning Before upgrading
+Make sure that the user has enough balance and allowance for the upgrade. If the user doesn't have enough balance or allowance, the transaction will revert.
+
+You can check the user's balance and allowance using the ERC20 token's `balanceOf` and `allowance` functions.
+:::
 
 ## React Client Integration
 
@@ -284,12 +307,22 @@ function SuperBoringDCAForm() {
 This JSX code demonstrates how to interact with the MacroForwarder and SBMacro contracts to start a SuperBoring DCA flow.
 It uses the `getParams` function from the SBMacro contract to properly encode the parameters, then calls the `runMacro` function on the MacroForwarder contract.
 
-## Important Notes
-
 1. Make sure to replace the `SB_MACRO_ADDRESS` with the correct address for the network you're using.
 2. The `torexAddr` should be the address of the TOREX contract you want to interact with.
 3. The `flowRate` is the rate at which you want to stream tokens to the Torex contract.
 4. Set `distributor` and `referrer` to `ethers.constants.AddressZero` if you don't want to specify these.
 5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed.
 
-Remember to handle errors and edge cases in a production environment, and always test thoroughly on testnets before deploying to mainnet.
+:::tip What is Upgrading?
+Upgrading is the process of converting an ERC20 token to a Super Token.
+
+In the codebase of Superfluid, the term "upgrade" refers to the process of wrapping an ERC20 token into a Super Token. The term "downgrade" refers to the process of unwrapping a Super Token back into an ERC20 token.
+
+Super Tokens are ERC20 tokens that have additional functionality, such as streaming and distributions. You can learn more about Super Tokens at the [Superfluid Docs](https://docs.superfluid.finance/).
+:::
+
+:::warning Before upgrading
+Make sure that the user has enough balance and allowance for the upgrade. If the user doesn't have enough balance or allowance, the transaction will revert.
+
+You can check the user's balance and allowance using the ERC20 token's `balanceOf` and `allowance` functions.
+:::
