@@ -336,3 +336,10 @@ Make sure that the user has enough balance and allowance for the upgrade. If the
 
 You can check the user's balance and allowance using the ERC20 token's `balanceOf` and `allowance` functions.
 :::
+
+:::tip Will this work for starting, updating and stopping DCA flows?
+The SBMacro contract can be used to start, update DCA flows.
+
+In order to stop a DCA flow, you should use the [CFAv1Forwarder contract](https://docs.superfluid.finance/docs/technical-reference/CFAv1Forwarder) available on all networks,
+and call the method `deteleFlow` with the correct parameters.
+:::
