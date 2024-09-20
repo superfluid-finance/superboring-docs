@@ -9,6 +9,16 @@ import SBMacro from '@site/src/components/SBMacro';
 This guide explains how to integrate SuperBoring into your dApp or smart contract using the [**SBMacro** contract](https://github.com/d10r/SBMacro/blob/master/README.md).
 SBMacro provides a convenient API for easy onboarding to SuperBoring, allowing you to create a DCA (Dollar-Cost Averaging) flow to a SuperBoring Torex with customizable parameters.
 
+In the example below, we demonstrate how to integrate SuperBoring into a React client and a Solidity smart contract.
+The example shows how to start a SuperBoring DCA flow by calling the SBMacro contract with the required parameters.
+
+:::tip Will this work for starting, updating and stopping DCA flows?
+The SBMacro contract can be used to start, update DCA flows.
+
+In order to stop a DCA flow, you should use the [CFAv1Forwarder contract](https://docs.superfluid.finance/docs/technical-reference/CFAv1Forwarder) available on all networks,
+and call the method `deteleFlow` with the correct parameters.
+:::
+
 ## SBMacro Deployment Addresses
 
 The [**SBMacro**](https://github.com/d10r/SBMacro/blob/master/README.md) contract is deployed on the following networks:
