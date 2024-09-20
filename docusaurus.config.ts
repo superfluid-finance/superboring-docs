@@ -8,6 +8,9 @@ const config: Config = {
   title: 'SuperBoring Docs',
   tagline: 'DCA into Crypto every second',
   favicon: 'img/favicon.ico',
+  themes: [
+    "@docusaurus/theme-live-codeblock"
+  ],
 
   // Set the production url of your site here
   url: 'https://your-docusaurus-site.example.com',
@@ -152,6 +155,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ["solidity"],
     },
   } satisfies Preset.ThemeConfig,
 };

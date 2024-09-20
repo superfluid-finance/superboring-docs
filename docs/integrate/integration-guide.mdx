@@ -1,0 +1,295 @@
+---
+sidebar_position: 2
+---
+
+import SBMacro from '@site/src/components/SBMacro';
+
+# How to Integrate SuperBoring?
+
+This guide explains how to integrate SuperBoring into your dApp or smart contract using the SBMacro contract.
+SBMacro provides a convenient API for easy onboarding to SuperBoring, allowing you to create a DCA (Dollar-Cost Averaging) flow to a SuperBoring Torex with customizable parameters.
+
+## SBMacro Deployment Addresses
+
+The **SBMacro** contract is deployed on the following networks:
+
+- Optimism Sepolia: `0x34Db26737185671215fB90E2F8C6fd8C4F8eB944`
+- Celo Mainnet: `0xC25a0B78C1d9F403F33834639FfF5798847015F8`
+- Base Mainnet: `0xE581E09a9c2a9188c3E6F0fAb5a0b3EC88cA39aE`
+- Optimism Mainnet: `0x383329703f346d72F4b86111a502daaa8f2c69C7`
+
+The **MacroForwarder** address is the same for all networks:
+- All Superfluid-supported networks: `0xfD01285b9435bc45C243E5e7F978E288B2912de6`
+
+:::tip What is the MacroForwarder?
+The MacroForwarder is one of the trusted forwarder contracts that allows you to call the SBMacro contract with encoded parameters.
+Th MacroForwarder is useful for batching operations and guaranteeing a good user experience.
+:::
+
+## Smart Contract Integration
+
+To integrate SuperBoring at the smart contract level, you'll need to interact with the MacroForwarder contract, which will then call the SBMacro contract.
+
+### Example Solidity Code
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IMacroForwarder {
+    function runMacro(address macro, bytes memory params) external;
+}
+
+contract SuperBoringIntegration {
+    IMacroForwarder public immutable macroForwarder;
+    address public immutable sbMacroAddress;
+
+    constructor(address _macroForwarder, address _sbMacroAddress) {
+        macroForwarder = IMacroForwarder(_macroForwarder);
+        sbMacroAddress = _sbMacroAddress;
+    }
+
+    /**
+     * @dev A function which start or updates a SuperBoring DCA flow.
+     * @param torexAddr address of the Torex contract. The token address is derived from this (inToken).
+     * @param flowRate flowrate to be set for the flow to the Torex contract. The pre-existing flowrate must be 0 (no flow).
+     * @param distributor address of the distributor, or zero address if none.
+     * @param referrer address of the referrer, or zero address if none.
+     * @param upgradeAmount amount (18 decimals) to upgrade from underlying ERC20 to SuperToken.
+     *   - if `type(uint256).max`, the maximum possible amount is upgraded (current allowance).
+     *   - otherwise, the specified amount is upgraded. Requires sufficient underlying balance and allowance, otherwise the transaction will revert.
+     * Note that upgradeAmount shall be 0 if inToken has no underlying ERC20 token.
+     */
+
+    function startSuperBoringDCA(
+        address torexAddr,
+        int96 flowRate,
+        address distributor,
+        address referrer,
+        uint256 upgradeAmount
+    ) external {
+        bytes memory params = abi.encode(torexAddr, flowRate, distributor, referrer, upgradeAmount);
+        macroForwarder.runMacro(sbMacroAddress, params);
+    }
+}
+```
+
+In this example, we create a contract that allows users to start a SuperBoring DCA flow by calling the `startSuperBoringDCA` function. This function encodes the parameters and calls the MacroForwarder's `runMacro` function with the SBMacro address and encoded parameters.
+
+## React Client Integration
+
+The example below demonstrates how to integrate SuperBoring into a React client using the SBMacro contract.
+It shows the creation of a form that allows users to start a SuperBoring DCA flow by entering the required parameters.
+
+:::note About ethers.js
+This example uses ethers.js to interact with the smart contract. Make sure to install it by running `npm install ethers`.
+
+You can choose to use another library if you prefer (eg. viem, wagmi, web3js etc), but the example code will need to be adjusted accordingly.
+:::
+
+### Example JSX Component Code
+
+```jsx live
+// Don't forget to install ethers.js: "npm install ethers" and make the right imports
+//import React, { useState } from 'react';
+//import { ethers } from 'ethers';
+
+function SuperBoringDCAForm() {
+  const [torexAddr, setTorexAddr] = React.useState('');
+  const [flowRate, setFlowRate] = React.useState('');
+  const [distributor, setDistributor] = React.useState('');
+  const [referrer, setReferrer] = React.useState('');
+  const [upgradeAmount, setUpgradeAmount] = React.useState('');
+  const [status, setStatus] = React.useState('');
+  const [isConnected, setIsConnected] = React.useState(false);
+
+  React.useEffect(() => {
+    checkIfWalletIsConnected();
+  }, []);
+
+  const MACRO_FORWARDER_ADDRESS = '0xfD01285b9435bc45C243E5e7F978E288B2912de6';
+  const SB_MACRO_ADDRESS = '0x383329703f346d72F4b86111a502daaa8f2c69C7'; // Example: Optimism Mainnet
+
+  const macroForwarderABI = [
+    'function runMacro(address macro, bytes memory params) external',
+  ];
+
+  const sbMacroABI = [
+    'function getParams(address torexAddr, int96 flowRate, address distributor, address referrer, uint256 upgradeAmount) public pure returns (bytes memory)',
+  ];
+
+  const checkIfWalletIsConnected = async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          setIsConnected(true);
+        }
+      } catch (error) {
+        console.error("An error occurred while checking the wallet connection:", error);
+      }
+    }
+  };
+
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setIsConnected(true);
+      } catch (error) {
+        console.error("User denied account access");
+      }
+    } else {
+      alert("Please install MetaMask!");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Processing...');
+
+    try {
+      if (!window.ethereum) throw new Error('No crypto wallet found');
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      const macroForwarder = new ethers.Contract(MACRO_FORWARDER_ADDRESS, macroForwarderABI, signer);
+      const sbMacro = new ethers.Contract(SB_MACRO_ADDRESS, sbMacroABI, provider);
+
+      const flowRateBN = ethers.utils.parseEther(flowRate);
+      const upgradeAmountBN = upgradeAmount === 'max' ? ethers.constants.MaxUint256 : ethers.utils.parseEther(upgradeAmount);
+
+      const params = await sbMacro.getParams(
+        torexAddr,
+        flowRateBN,
+        distributor || ethers.constants.AddressZero,
+        referrer || ethers.constants.AddressZero,
+        upgradeAmountBN
+      );
+
+      const tx = await macroForwarder.runMacro(SB_MACRO_ADDRESS, params);
+      await tx.wait();
+
+      setStatus('DCA position started successfully!');
+    } catch (err) {
+      console.error(err);
+      setStatus(`Error: ${err.message}`);
+    }
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '8px',
+    margin: '8px 0',
+    boxSizing: 'border-box',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+  };
+
+  const buttonStyle = {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    marginTop: '10px',
+  };
+
+  const formStyle = {
+    maxWidth: '400px',
+    margin: '0 auto',
+    padding: '20px',
+    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+    borderRadius: '8px',
+  };
+
+  return (
+    <div style={formStyle}>
+      <h2 style={{ textAlign: 'center' }}>Start SuperBoring DCA Position</h2>
+      {!isConnected ? (
+        <button onClick={connectWallet} style={buttonStyle}>Connect Wallet</button>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="torexAddr">Torex Address</label>
+            <input
+              type="text"
+              id="torexAddr"
+              value={torexAddr}
+              onChange={(e) => setTorexAddr(e.target.value)}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="flowRate">Flow Rate (in tokens per second)</label>
+            <input
+              type="text"
+              id="flowRate"
+              value={flowRate}
+              onChange={(e) => setFlowRate(e.target.value)}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="distributor">Distributor (optional)</label>
+            <input
+              type="text"
+              id="distributor"
+              value={distributor}
+              onChange={(e) => setDistributor(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label htmlFor="referrer">Referrer (optional)</label>
+            <input
+              type="text"
+              id="referrer"
+              value={referrer}
+              onChange={(e) => setReferrer(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label htmlFor="upgradeAmount">Upgrade Amount (in tokens, or 'max')</label>
+            <input
+              type="text"
+              id="upgradeAmount"
+              value={upgradeAmount}
+              onChange={(e) => setUpgradeAmount(e.target.value)}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <button type="submit" style={buttonStyle}>
+            Start DCA Position
+          </button>
+        </form>
+      )}
+      {status && (
+        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
+          <strong>Status:</strong> {status}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+This JSX code demonstrates how to interact with the MacroForwarder and SBMacro contracts to start a SuperBoring DCA flow.
+It uses the `getParams` function from the SBMacro contract to properly encode the parameters, then calls the `runMacro` function on the MacroForwarder contract.
+
+## Important Notes
+
+1. Make sure to replace the `SB_MACRO_ADDRESS` with the correct address for the network you're using.
+2. The `torexAddr` should be the address of the TOREX contract you want to interact with.
+3. The `flowRate` is the rate at which you want to stream tokens to the Torex contract.
+4. Set `distributor` and `referrer` to `ethers.constants.AddressZero` if you don't want to specify these.
+5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed.
+
+Remember to handle errors and edge cases in a production environment, and always test thoroughly on testnets before deploying to mainnet.
