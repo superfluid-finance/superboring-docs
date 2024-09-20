@@ -311,7 +311,7 @@ It uses the `getParams` function from the SBMacro contract to properly encode th
 2. The `torexAddr` should be the address of the TOREX contract you want to interact with.
 3. The `flowRate` is the rate at which you want to stream tokens to the Torex contract.
 4. Set `distributor` and `referrer` to `ethers.constants.AddressZero` if you don't want to specify these.
-5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed.
+5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed (eg. the full balance of the wallet in ERC-20)
 
 :::tip What is Upgrading?
 Upgrading is the process of converting an ERC20 token to a Super Token.
