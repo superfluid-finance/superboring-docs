@@ -2,8 +2,6 @@
 sidebar_position: 2
 ---
 
-import SBMacro from '@site/src/components/SBMacro';
-
 # How to Integrate SuperBoring?
 
 This guide explains how to integrate SuperBoring into your dApp or smart contract using the [**SBMacro** contract](https://github.com/d10r/SBMacro/blob/master/README.md).
@@ -135,10 +133,33 @@ function SuperBoringDCAForm() {
   const [upgradeAmount, setUpgradeAmount] = React.useState('');
   const [status, setStatus] = React.useState('');
   const [isConnected, setIsConnected] = React.useState(false);
+  const [walletAddress, setWalletAddress] = React.useState('');
+  const [chainId, setChainId] = React.useState(null);
+  const [maxBalance, setMaxBalance] = React.useState(null);
+  const [allowance, setAllowance] = React.useState(null);
+  const [isTorexValid, setIsTorexValid] = React.useState(false);
+  const [inTokenAddress, setInTokenAddress] = React.useState(null);
+  const [underlyingTokenAddress, setUnderlyingTokenAddress] = React.useState(null);
 
   React.useEffect(() => {
     checkIfWalletIsConnected();
+    if (window.ethereum) {
+      window.ethereum.on('chainChanged', handleChainChanged);
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+    }
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+    };
   }, []);
+
+  React.useEffect(() => {
+    if (isConnected && torexAddr) {
+      validateTorexAndFetchTokenInfo();
+    }
+  }, [isConnected, torexAddr]);
 
   const MACRO_FORWARDER_ADDRESS = '0xfD01285b9435bc45C243E5e7F978E288B2912de6';
   const SB_MACRO_ADDRESS = '0x383329703f346d72F4b86111a502daaa8f2c69C7'; // Example: Optimism Mainnet
@@ -151,12 +172,30 @@ function SuperBoringDCAForm() {
     'function getParams(address torexAddr, int96 flowRate, address distributor, address referrer, uint256 upgradeAmount) public pure returns (bytes memory)',
   ];
 
+  const torexABI = [
+    'function getPairedTokens() external view returns (address inToken, address outToken)',
+  ];
+
+  const superTokenABI = [
+    'function getUnderlyingToken() external view returns (address)',
+  ];
+
+  const erc20ABI = [
+    'function balanceOf(address account) external view returns (uint256)',
+    'function allowance(address owner, address spender) external view returns (uint256)',
+    'function approve(address spender, uint256 amount) external returns (bool)',
+  ];
+
+
   const checkIfWalletIsConnected = async () => {
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         if (accounts.length > 0) {
           setIsConnected(true);
+          setWalletAddress(accounts[0]);
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          setChainId(parseInt(chainId, 16));
         }
       } catch (error) {
         console.error("An error occurred while checking the wallet connection:", error);
@@ -167,13 +206,83 @@ function SuperBoringDCAForm() {
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setIsConnected(true);
+        setWalletAddress(accounts[0]);
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        setChainId(parseInt(chainId, 16));
       } catch (error) {
         console.error("User denied account access");
       }
     } else {
       alert("Please install MetaMask!");
+    }
+  };
+
+  const handleChainChanged = (chainId) => {
+    setChainId(parseInt(chainId, 16));
+  };
+
+  const handleAccountsChanged = (accounts) => {
+    if (accounts.length > 0) {
+      setWalletAddress(accounts[0]);
+      setIsConnected(true);
+    } else {
+      setWalletAddress('');
+      setIsConnected(false);
+    }
+  };
+
+  const validateTorexAndFetchTokenInfo = async () => {
+    if (!window.ethereum || !isConnected || !torexAddr) return;
+    
+    const provider = new ethers.BrowserProvider(window.ethereum);
+
+    try {
+      const torex = new ethers.Contract(torexAddr, torexABI, provider);
+      const [inTokenAddr] = await torex.getPairedTokens();
+      setInTokenAddress(inTokenAddr);
+
+      const superToken = new ethers.Contract(inTokenAddr, superTokenABI, provider);
+      const underlyingAddr = await superToken.getUnderlyingToken();
+      setUnderlyingTokenAddress(underlyingAddr);
+
+      setIsTorexValid(true);
+      await fetchBalanceAndAllowance(underlyingAddr);
+    } catch (error) {
+      console.error("Error validating Torex address:", error);
+      setIsTorexValid(false);
+      setStatus("Invalid Torex address");
+    }
+  };
+
+  const fetchBalanceAndAllowance = async (tokenAddress) => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    try {
+      if (tokenAddress === ethers.ZeroAddress) {
+        // Native token (ETH)
+        const balance = await provider.getBalance(walletAddress);
+        setMaxBalance(ethers.formatEther(balance));
+        setAllowance(null);  // No allowance needed for native token
+      } else {
+        // ERC20 token
+        const erc20 = new ethers.Contract(tokenAddress, erc20ABI, provider);
+        const balance = await erc20.balanceOf(walletAddress);
+        console.log(balance);
+        const allowance = await erc20.allowance(walletAddress, SB_MACRO_ADDRESS);
+        setMaxBalance(ethers.formatEther(balance));
+        setAllowance(ethers.formatEther(allowance));
+      }
+    } catch (error) {
+      console.error("Error fetching balance and allowance:", error);
+    }
+  };
+
+  const handleUpgradeAmountChange = (e) => {
+    const value = e.target.value;
+    setUpgradeAmount(value);
+    if (value.toLowerCase() === 'max' && maxBalance) {
+      setUpgradeAmount(maxBalance);
     }
   };
 
@@ -184,20 +293,31 @@ function SuperBoringDCAForm() {
     try {
       if (!window.ethereum) throw new Error('No crypto wallet found');
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
 
       const macroForwarder = new ethers.Contract(MACRO_FORWARDER_ADDRESS, macroForwarderABI, signer);
       const sbMacro = new ethers.Contract(SB_MACRO_ADDRESS, sbMacroABI, provider);
 
-      const flowRateBN = ethers.utils.parseEther(flowRate);
-      const upgradeAmountBN = upgradeAmount === 'max' ? ethers.constants.MaxUint256 : ethers.utils.parseEther(upgradeAmount);
+      const flowRateBN = ethers.parseEther(flowRate);
+      const upgradeAmountBN = ethers.parseEther(upgradeAmount);
+      console.log('upgradeAmountBN', upgradeAmountBN); 
+
+      // Check allowance
+      if (allowance !== null && ethers.upgradeAmountBN.gt(ethers.parseEther(allowance))) {
+        if (underlyingTokenAddress !== ethers.ZeroAddress) {
+          const erc20 = new ethers.Contract(underlyingTokenAddress, erc20ABI, signer);
+          const approveTx = await erc20.approve(SB_MACRO_ADDRESS, upgradeAmountBN);
+          await approveTx.wait();
+          setStatus('Approval successful. Starting DCA position...');
+        }
+      }
 
       const params = await sbMacro.getParams(
         torexAddr,
         flowRateBN,
-        distributor || ethers.constants.AddressZero,
-        referrer || ethers.constants.AddressZero,
+        distributor || ethers.ZeroAddress,
+        referrer || ethers.ZeroAddress,
         upgradeAmountBN
       );
 
@@ -239,71 +359,87 @@ function SuperBoringDCAForm() {
     borderRadius: '8px',
   };
 
+  const disabledInputStyle = {
+    ...inputStyle,
+    backgroundColor: '#f0f0f0',
+    cursor: 'not-allowed',
+  };
+
   return (
     <div style={formStyle}>
       <h2 style={{ textAlign: 'center' }}>Start SuperBoring DCA Position</h2>
       {!isConnected ? (
         <button onClick={connectWallet} style={buttonStyle}>Connect Wallet</button>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="torexAddr">Torex Address</label>
-            <input
-              type="text"
-              id="torexAddr"
-              value={torexAddr}
-              onChange={(e) => setTorexAddr(e.target.value)}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="flowRate">Flow Rate (in tokens per second)</label>
-            <input
-              type="text"
-              id="flowRate"
-              value={flowRate}
-              onChange={(e) => setFlowRate(e.target.value)}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="distributor">Distributor (optional)</label>
-            <input
-              type="text"
-              id="distributor"
-              value={distributor}
-              onChange={(e) => setDistributor(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label htmlFor="referrer">Referrer (optional)</label>
-            <input
-              type="text"
-              id="referrer"
-              value={referrer}
-              onChange={(e) => setReferrer(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label htmlFor="upgradeAmount">Upgrade Amount (in tokens, or 'max')</label>
-            <input
-              type="text"
-              id="upgradeAmount"
-              value={upgradeAmount}
-              onChange={(e) => setUpgradeAmount(e.target.value)}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <button type="submit" style={buttonStyle}>
-            Start DCA Position
-          </button>
-        </form>
+        <p>Connected Wallet: {walletAddress}</p>
       )}
+      {chainId && chainId !== 10 && (
+        <p style={{ color: 'red' }}>Chain not supported, please switch to Optimism</p>
+      )}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="torexAddr">Torex Address</label>
+          <input
+            type="text"
+            id="torexAddr"
+            value={torexAddr}
+            onChange={(e) => setTorexAddr(e.target.value)}
+            style={isConnected ? inputStyle : disabledInputStyle}
+            required
+            disabled={!isConnected}
+          />
+        </div>
+        <div>
+          <label htmlFor="flowRate">Flow Rate (in tokens per second)</label>
+          <input
+            type="text"
+            id="flowRate"
+            value={flowRate}
+            onChange={(e) => setFlowRate(e.target.value)}
+            style={isConnected && isTorexValid ? inputStyle : disabledInputStyle}
+            required
+            disabled={!isConnected || !isTorexValid}
+          />
+        </div>
+        <div>
+          <label htmlFor="distributor">Distributor (optional)</label>
+          <input
+            type="text"
+            id="distributor"
+            value={distributor}
+            onChange={(e) => setDistributor(e.target.value)}
+            style={isConnected && isTorexValid ? inputStyle : disabledInputStyle}
+            disabled={!isConnected || !isTorexValid}
+          />
+        </div>
+        <div>
+          <label htmlFor="referrer">Referrer (optional)</label>
+          <input
+            type="text"
+            id="referrer"
+            value={referrer}
+            onChange={(e) => setReferrer(e.target.value)}
+            style={isConnected && isTorexValid ? inputStyle : disabledInputStyle}
+            disabled={!isConnected || !isTorexValid}
+          />
+        </div>
+        <div>
+          <label htmlFor="upgradeAmount">Upgrade Amount (in tokens, or 'max')</label>
+          <input
+            type="text"
+            id="upgradeAmount"
+            value={upgradeAmount}
+            onChange={handleUpgradeAmountChange}
+            style={isConnected && isTorexValid ? inputStyle : disabledInputStyle}
+            required
+            disabled={!isConnected || !isTorexValid}
+          />
+          {maxBalance && <p>Max available: {maxBalance}</p>}
+        </div>
+        <button type="submit" style={buttonStyle} disabled={!isConnected || chainId !== 10 || !isTorexValid}>
+          Start DCA Position
+        </button>
+      </form>
       {status && (
         <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
           <strong>Status:</strong> {status}
@@ -320,7 +456,7 @@ It uses the `getParams` function from the SBMacro contract to properly encode th
 1. Make sure to replace the `SB_MACRO_ADDRESS` with the correct address for the network you're using.
 2. The `torexAddr` should be the address of the TOREX contract you want to interact with.
 3. The `flowRate` is the rate at which you want to stream tokens to the Torex contract.
-4. Set `distributor` and `referrer` to `ethers.constants.AddressZero` if you don't want to specify these.
+4. Set `distributor` and `referrer` to `ethers.ZeroAddress` if you don't want to specify these.
 5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed (eg. the full balance of the wallet in ERC-20)
 
 :::tip What is Upgrading?
