@@ -9,7 +9,7 @@ const config: Config = {
   tagline: 'DCA into Crypto every second',
   favicon: 'img/favicon.ico',
   themes: [
-    "@docusaurus/theme-live-codeblock"
+    "@docusaurus/theme-live-codeblock", '@docusaurus/theme-mermaid'
   ],
 
   // Set the production url of your site here
@@ -25,6 +25,9 @@ const config: Config = {
 
   onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    mermaid: true,
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you

@@ -1,0 +1,8 @@
+{
+    "redirects": [
+      { "source": "/docs/architecture/overview", "destination": "/docs/architecture", "permanent": true },
+      { "source": "/docs/architecture/smart-contracts", "destination": "/docs/smart-contracts", "permanent": true },
+      { "source": "/superfluid/protocol-overview/what-is-superfluid", "destination": "/docs/concepts/superfluid", "permanent": true }
+    ]
+  }
+  
