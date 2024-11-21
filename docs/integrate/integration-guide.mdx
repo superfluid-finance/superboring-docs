@@ -86,6 +86,8 @@ function SuperBoringDCAForm() {
   React.useEffect(() => {
     if (isConnected && torexAddr) {
       validateTorexAndFetchTokenInfo();
+      console.log('isConnected', isConnected);
+      console.log('torexAddr', torexAddr);
     }
   }, [isConnected, torexAddr]);
 
@@ -170,13 +172,14 @@ function SuperBoringDCAForm() {
       const torex = new ethers.Contract(torexAddr, torexABI, provider);
       const [inTokenAddr] = await torex.getPairedTokens();
       setInTokenAddress(inTokenAddr);
+      console.log('inTokenAddr', inTokenAddr); 
 
       const superToken = new ethers.Contract(inTokenAddr, superTokenABI, provider);
       const underlyingAddr = await superToken.getUnderlyingToken();
       setUnderlyingTokenAddress(underlyingAddr);
 
       setIsTorexValid(true);
-      await fetchBalanceAndAllowance(underlyingAddr);
+      await fetchBalanceAndAllowance(underlyingAddr,inTokenAddr);
     } catch (error) {
       console.error("Error validating Torex address:", error);
       setIsTorexValid(false);
@@ -184,8 +187,9 @@ function SuperBoringDCAForm() {
     }
   };
 
-  const fetchBalanceAndAllowance = async (tokenAddress) => {
+  const fetchBalanceAndAllowance = async (tokenAddress, superTokenAddress) => {
     const provider = new ethers.BrowserProvider(window.ethereum);
+    //console.log('inTokenAddr', inTokenAddr);
     try {
       if (tokenAddress === ethers.ZeroAddress) {
         // Native token (ETH)
@@ -195,10 +199,12 @@ function SuperBoringDCAForm() {
       } else {
         // ERC20 token
         const erc20 = new ethers.Contract(tokenAddress, erc20ABI, provider);
+        console.log(tokenAddress);
         const balance = await erc20.balanceOf(walletAddress);
         console.log(balance);
-        const allowance = await erc20.allowance(walletAddress, SB_MACRO_ADDRESS);
-        setMaxBalance(ethers.formatEther(balance));
+        console.log(superTokenAddress);
+        const allowance = await erc20.allowance(walletAddress, superTokenAddress);
+        setMaxBalance(ethers.formatUnits(balance,6));
         setAllowance(ethers.formatEther(allowance));
       }
     } catch (error) {
@@ -232,12 +238,12 @@ function SuperBoringDCAForm() {
       console.log('upgradeAmountBN', upgradeAmountBN); 
 
       // Check allowance
-      if (allowance !== null && ethers.upgradeAmountBN.gt(ethers.parseEther(allowance))) {
+      if (allowance !== null && BigInt(upgradeAmountBN) > BigInt(ethers.parseEther(allowance))) {
         if (underlyingTokenAddress !== ethers.ZeroAddress) {
           const erc20 = new ethers.Contract(underlyingTokenAddress, erc20ABI, signer);
-          const approveTx = await erc20.approve(SB_MACRO_ADDRESS, upgradeAmountBN);
+          const approveTx = await erc20.approve(inTokenAddress, upgradeAmountBN);
           await approveTx.wait();
-          setStatus('Approval successful. Starting DCA position...');
+          setStatus('Approval successful. Starting DCA position.');
         }
       }
 
