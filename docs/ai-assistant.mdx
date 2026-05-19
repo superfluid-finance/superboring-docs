@@ -1,0 +1,75 @@
+---
+sidebar_position: 7
+---
+
+# AI Assistant (experimental)
+
+:::warning Experimental feature
+The AI Assistant is an early experimental feature. Behavior, pricing, and limits may change as we iterate.
+:::
+
+The **AI Assistant** is an in-app agent that helps you research, build, and operate DCA strategies on SuperBoring. It is paid for natively in \$BORING, spent directly out of your [Sleep Pod](/docs/boring#sleep-pods).
+
+## What you can do with it
+
+- **Chat** — ask questions about markets, TOREXes, your positions, and SuperBoring itself.
+- **Strategy compilation** — describe a DCA strategy in natural language; the Assistant produces an executable plan.
+- **Strategy execution** — opt into running a compiled strategy. The Assistant evaluates it periodically and acts on your behalf.
+
+## How you pay for it
+
+Under the hood, the Assistant is metered through **DIEM**. From the user's perspective, you just see a daily AI balance, denominated in \$BORING.
+
+### Enabling the Assistant
+
+To enable the AI Assistant on your account, you spend \$BORING from your Sleep Pod. Spending is a one-way **burn-to-treasury** transfer:
+the Sleep Pod sends \$BORING to the SuperBoring treasury, which the team periodically converts into DIEM credits to fund the underlying AI service.
+
+You do not need to manage DIEM yourself. The mapping from "\$BORING spent" → "AI capacity" is configured in the backend and may be tuned over time.
+
+### Your Daily AI Balance
+
+Once enabled, you'll see three numbers in the UI for the AI Assistant:
+
+- **Daily AI Balance** — your total daily capacity (e.g. 100).
+- **Consumed Daily AI Balance** — how much of today's capacity you've already used.
+- **Pending AI Balance** — reserved-but-not-yet-consumed capacity (e.g. by a compiled strategy that hasn't fully run).
+
+The UI presents this as a compact triple, for example:
+
+```
+0/100 (0)        ← fresh day: 0 consumed of 100, 0 pending
+30/100 (0)       ← after chatting: 30 consumed, 100 capacity, 0 pending
+30/80 (20)       ← compiled a strategy: 20 capacity is now pending
+5/100 (0)        ← next day: capacity refilled, 5 consumed by a periodic strategy execution
+```
+
+:::tip Daily refills, not a wallet
+**The Daily AI Balance refills every day** — it is a usage quota, not a withdrawable balance. You cannot move it out, swap it, or convert it back to \$BORING.
+This mirrors how DIEM works under the hood.
+:::
+
+### What costs what
+
+| Action | Cost |
+|--------|------|
+| Chat message | Consumes Daily AI Balance per message (variable, based on size). |
+| Strategy compilation | **Flat fee**, charged once when you compile. The fee is reserved as *Pending AI Balance* on top of being consumed. |
+| Strategy execution (periodic) | Consumes Daily AI Balance each time the strategy ticks. |
+
+Exact \$BORING-per-unit and the flat compile fee are **backend-configurable settings** and will be tuned during the experimental phase.
+
+## Smart-contract surface
+
+The on-chain footprint of the AI Assistant is intentionally minimal:
+
+- **Burning \$BORING:** the Sleep Pod sends \$BORING to the treasury address. No custom logic — this is a plain transfer.
+- **View function:** any user's current AI balance is readable from the contracts so the UI and integrators can display it.
+
+All metering, refilling, and strategy state lives off-chain in the SuperBoring backend.
+
+## Operational notes
+
+- The team periodically converts treasury-held \$BORING into DIEM credits, which back the live AI capacity.
+- During the experimental phase, expect Daily AI Balance limits, per-action costs, and the \$BORING-per-AI-credit ratio to be adjusted based on real usage.
+- Feedback on the Assistant is highly encouraged — it directly shapes how pricing and limits evolve.
