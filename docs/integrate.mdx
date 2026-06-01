@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 11
 ---
 
 # How to Integrate SuperBoring?
@@ -56,7 +56,6 @@ You can choose to use another library if you prefer (eg. viem, wagmi, web3js etc
 function SuperBoringDCAForm() {
   const [torexAddr, setTorexAddr] = React.useState('');
   const [flowRate, setFlowRate] = React.useState('');
-  const [distributor, setDistributor] = React.useState('');
   const [referrer, setReferrer] = React.useState('');
   const [upgradeAmount, setUpgradeAmount] = React.useState('');
   const [status, setStatus] = React.useState('');
@@ -250,7 +249,7 @@ function SuperBoringDCAForm() {
       const params = await sbMacro.getParams(
         torexAddr,
         flowRateBN,
-        distributor || ethers.ZeroAddress,
+        ethers.ZeroAddress, // distributor: deprecated, always pass zero
         referrer || ethers.ZeroAddress,
         upgradeAmountBN
       );
@@ -336,17 +335,6 @@ function SuperBoringDCAForm() {
           />
         </div>
         <div>
-          <label htmlFor="distributor">Distributor (optional)</label>
-          <input
-            type="text"
-            id="distributor"
-            value={distributor}
-            onChange={(e) => setDistributor(e.target.value)}
-            style={isConnected && isTorexValid ? inputStyle : disabledInputStyle}
-            disabled={!isConnected || !isTorexValid}
-          />
-        </div>
-        <div>
           <label htmlFor="referrer">Referrer (optional)</label>
           <input
             type="text"
@@ -390,8 +378,12 @@ It uses the `getParams` function from the SBMacro contract to properly encode th
 1. Make sure to replace the `SB_MACRO_ADDRESS` with the correct address for the network you're using.
 2. The `torexAddr` should be the address of the TOREX contract you want to interact with.
 3. The `flowRate` is the rate at which you want to stream tokens to the Torex contract.
-4. Set `distributor` and `referrer` to `ethers.ZeroAddress` if you don't want to specify these.
+4. Set `referrer` to `ethers.ZeroAddress` if you don't want to specify one.
 5. Setting `upgradeAmount` to `ethers.constants.MaxUint256` will upgrade the maximum possible amount of tokens. You can also specify a specific amount if needed (eg. the full balance of the wallet in ERC-20)
+
+:::note `distributor` parameter is deprecated
+The `distributor` parameter in `SBMacro.getParams` is no longer supported and will be removed in a future release. The on-chain distribution-fee module was removed in SuperBoring contracts v2.0.0 (the full TOREX fee now goes to stakers). For now, always pass `ethers.ZeroAddress` as the distributor argument.
+:::
 
 :::tip What is Upgrading?
 Upgrading is the process of converting an ERC20 token to a Super Token.

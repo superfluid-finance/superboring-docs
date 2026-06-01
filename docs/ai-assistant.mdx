@@ -1,0 +1,90 @@
+---
+sidebar_position: 7
+---
+
+# AI Assistant (experimental)
+
+:::warning Experimental feature
+The AI Assistant is an early experimental feature. Behavior, pricing, and limits may change as we iterate.
+:::
+
+The **AI Assistant** is an in-app agent that helps you research, build, and operate on-chain strategies — paid for natively in \$BORING, spent directly from your [Sleep Pod](/docs/boring#sleep-pods).
+
+Although it lives inside SuperBoring, the Assistant is **not** SuperBoring-only. Out of the box it can interact with any protocol whose smart contracts are verified — including Aave, Uniswap, Morpho, Superfluid, Lido, and others. We plan to open a curated, community-driven repository of protocol skills so anyone can add new integrations over time.
+
+## What you can do with it
+
+- **Chat** — ask questions about markets, protocols, your positions, and any verified on-chain contract.
+- **Strategy compilation** — describe a strategy in natural language; the Assistant produces an executable plan.
+- **Strategy execution** — opt into running a compiled strategy. The Assistant evaluates it periodically and acts on your behalf, across whichever protocols it spans.
+
+## How you pay for it
+
+The Assistant is **metered in \$BORING**. You spend \$BORING from your Sleep Pod to enable the feature and to use it — that's the only currency you need to think about.
+
+### Your Daily AI Balance
+
+Once enabled, your usage is tracked as a **Daily AI Balance**: a quota that refills every day. The UI surfaces it as four numbers:
+
+- **Consumed** — how much of today's capacity you've already used.
+- **Capacity** — your remaining daily ceiling (after any strategy-execution lock).
+- **Strategy execution lock** — capacity reserved for active strategies (see below).
+- **Pending** — capacity tentatively held while a strategy compilation is in flight.
+
+UI format: `consumed / capacity / strategy (pending)`.
+
+```
+0/100/0 (0)        ← fresh day: nothing used yet
+30/100/0 (0)       ← after chatting: 30 consumed of 100 daily capacity
+30/80/0 (20)       ← started compiling a strategy: 20 held as pending
+30/75/5 (0)        ← compile succeeded: pending cleared, 5/day now locked for execution, ceiling drops to 75
+0/75/5 (0)         ← next day: capacity refilled, 5 will be consumed by the strategy's daily ticks
+```
+
+:::tip Daily refills, not a wallet
+**The Daily AI Balance refills every day** — it is a usage quota, not a withdrawable balance. You cannot move it out, swap it, or convert it back to \$BORING.
+:::
+
+### Strategy execution: how the lock works
+
+When a strategy is **enabled**, the Assistant reserves a slice of your daily capacity equal to:
+
+```
+sum( per-execution price × executions per day )   for every active strategy
+```
+
+That sum is the **strategy execution lock**. It comes out of your daily ceiling — so a strategy that needs 5 credits/day reduces your effective ceiling from 100 to 95.
+
+**Disabling or deleting a strategy releases its locked credits immediately**, and your daily ceiling goes back up.
+
+### Strategy compilation: pending vs. locked
+
+Compiling a strategy is a flat fee. Here's the lifecycle:
+
+1. **Start compiling** → the flat fee is held as **Pending** on top of your existing usage.
+2. **Compilation succeeds** → the pending amount is removed from your daily ceiling and the strategy's execution lock kicks in (based on the strategy's frequency × per-execution price).
+3. **Compilation fails or stalls past the timeout** → the pending amount is released back into your daily capacity, no charge.
+
+## Pricing rules
+
+Only three numbers are meant to be user-facing. All are tunable by SuperBoring governance as we iterate.
+
+| Rule | What it does |
+|------|--------------|
+| **AI enablement cost** | The amount of \$BORING you spend from your Sleep Pod to switch the Assistant on. Early SuperBoring adopters may be exempt. |
+| **Daily chat quota** | The size of your daily AI Balance — i.e. how much non-strategy chat you can do per day. |
+| **Strategy compile cost** | The flat fee charged on a successful compilation (held as Pending while compiling). |
+
+## Smart-contract surface
+
+The on-chain footprint of the AI Assistant is intentionally minimal:
+
+- **Spending \$BORING:** the Sleep Pod sends \$BORING to the treasury address. No custom logic — just a plain transfer.
+
+Metering, daily balances, strategy locks, and compilation state all live **off-chain** in the SuperBoring backend. The on-chain treasury balance does not represent your usable AI capacity.
+
+## What's next
+
+- A curated, community-driven **protocol-skills repository** so anyone can teach the Assistant about new verified contracts.
+- More built-in skills for the protocols mentioned above (Aave, Uniswap, Morpho, Superfluid, Lido).
+- Per-strategy and per-skill telemetry in the UI.
