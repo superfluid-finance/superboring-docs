@@ -65,8 +65,8 @@ pie showData
 ```
 
 - **Community (75%)** — emitted to users over time via the [quadratic emission formula](#quadratic-emission-formula). This is the pool that rewards DCA activity and staking on TOREXes.
-- **Project (20%)** — reserved for the team, contributors, and ongoing protocol development.
-- **Liquidity Bootstrap (5%)** — seeds the initial on-chain markets (e.g. \$BORING/SUP, \$BORING/WETH) so users can acquire \$BORING outside of emissions.
+- **Project (20%)** — reserved for the team, contributors, and ongoing protocol development. This allocation is **not** instantly available: it is subject to the **same vesting schedule** as the rest of the supply, so it unlocks gradually over time rather than all at once.
+- **Liquidity Bootstrap (5%)** — seeds the initial on-chain markets (e.g. [\$BORING/SUP](https://app.uniswap.org/explore/pools/base/0x08c8DB2bdb4f1e1A46ca71c0f809973Eec5474A3), [\$BORING/WETH](https://app.uniswap.org/explore/pools/base/0xdD320D384Fd2b316b047395226Fb3B99EBCDC9dd)) so users can acquire \$BORING outside of emissions.
 
 ## Sleep Pods
 
@@ -84,7 +84,7 @@ A Sleep Pod is what gives you access to the protocol's core mechanics:
 There are two ways to acquire \$BORING:
 
 1. **Earn it from DCA** — when you run a DCA position on Base, \$BORING emissions are streamed directly into your Sleep Pod. No action needed on your part.
-2. **Buy it on Uniswap** — you can purchase \$BORING from the \$BORING/SUP or \$BORING/WETH pools on Base.
+2. **Buy it on Uniswap** — you can purchase \$BORING from the [\$BORING/SUP](https://app.uniswap.org/explore/pools/base/0x08c8DB2bdb4f1e1A46ca71c0f809973Eec5474A3) or [\$BORING/WETH](https://app.uniswap.org/explore/pools/base/0xdD320D384Fd2b316b047395226Fb3B99EBCDC9dd) pools on Base.
 
 \$BORING bought on Uniswap lands in your regular wallet. To use it inside SuperBoring (stake, AI Assistant), you must deposit it into your Sleep Pod.
 This is a plain ERC-20 transfer — no special smart contract calls are required. The SuperBoring UI offers two ways to do this:
